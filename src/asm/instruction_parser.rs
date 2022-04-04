@@ -28,10 +28,10 @@ impl AsmInstruction {
             Token::Opcode { code } => bytes.push(code as u8),
             _ => panic!("Invalid opcode"),
         };
-        for arg in &[&self.arg1, &self.arg2, &self.arg3] {
-            if let Some(token) = arg { AsmInstruction::extract_arg(&token, &mut bytes) }
+        for arg in [&self.arg1, &self.arg2, &self.arg3].into_iter().flatten() {
+            AsmInstruction::extract_arg(arg, &mut bytes);
         }
-        return bytes;
+        bytes
     }
 }
 
@@ -40,7 +40,7 @@ named!(pub parse_instruction<CompleteStr, AsmInstruction>,
         opcode: opcode >>
         register: register >>
         integer: integer >>
-        (AsmInstruction{opcode: opcode, arg1: Some(register), arg2: Some(integer), arg3: None})
+        (AsmInstruction{opcode, arg1: Some(register), arg2: Some(integer), arg3: None})
     )
 );
 

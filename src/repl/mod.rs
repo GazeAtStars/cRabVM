@@ -11,9 +11,9 @@ use crate::vm::VM;
 use crate::repl::parser::Parser;
 use crate::asm::program_parser::parse_program;
 
-pub static BANNER: &'static str = "Hello welcome to the incomplete lang REPL owo";
-pub static PROMPT: &'static str = "> ";
-pub static PREFIX: &'static str = ".";
+pub static BANNER: &str = "Hello welcome to the incomplete lang REPL owo";
+pub static PROMPT: &str = ">>> ";
+pub static PREFIX: &str = ".";
 
 #[derive(Default)]
 pub struct REPL {
@@ -89,7 +89,7 @@ impl REPL {
         self.message("Listing instructions currently in VM's program vector: ".to_string());
         let mut results = vec![];
         for instruction in &self.vm.program {
-            results.push(instruction.clone())
+            results.push(*instruction)
         }
         self.message(format!("{:#?}", results));
         self.message("End of Program Listing".to_string());
@@ -111,7 +111,7 @@ impl REPL {
         self.message("Listing registers and all contents:".to_string());
         let mut results = vec![];
         for register in &self.vm.registers {
-            results.push(register.clone());
+            results.push(*register);
         }
         self.message(format!("{:#?}", results));
         self.message("End of Register Listing".to_string());

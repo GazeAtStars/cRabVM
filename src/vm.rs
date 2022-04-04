@@ -23,7 +23,7 @@ impl VM {
     fn get_opcode(&mut self) -> Opcode {
         let opcode = Opcode::from(self.program[self.pcounter]);
         self.pcounter += 1;
-        return opcode;
+        opcode
     }
     pub fn run(&mut self) {
         let mut is_done = false;
@@ -37,14 +37,14 @@ impl VM {
     fn next_8_bits(&mut self) -> u8 {
         let result = self.program[self.pcounter];
         self.pcounter += 1;
-        return result;
+        result
     }
 
     fn next_16_bits(&mut self) -> u16 {
         let result =
             ((self.program[self.pcounter] as u16) << 8) | self.program[self.pcounter + 1] as u16;
         self.pcounter += 2;
-        return result;
+        result
     }
     pub fn add_byte(&mut self, b: u8) {
         self.program.push(b);
@@ -177,7 +177,7 @@ impl VM {
                 panic!("Illegal instruction encountered\nOpcode: {:?}, No. {}", opcode, opcode as u8);
             }
         }
-        return true;
+        true
     }
 }
 pub fn get_test_vm() -> VM {
