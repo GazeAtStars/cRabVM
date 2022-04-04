@@ -19,6 +19,10 @@ pub enum Opcode {
     LTQ,
     JEQ,
     JNEQ,
+    NOP,
+    ALOC,
+    INC,
+    DEC,
     IGL
 }
 
@@ -53,6 +57,10 @@ impl From<u8> for Opcode {
             14 => Opcode::LTQ,
             15 => Opcode::JEQ,
             16 => Opcode::JNEQ,
+            17 => Opcode::NOP,
+            18 => Opcode::ALOC,
+            19 => Opcode::INC,
+            20 => Opcode::DEC,
             100 => Opcode::IGL,
             _ => Opcode::IGL
         }
@@ -79,6 +87,10 @@ impl From<Opcode> for u8 {
             Opcode::LTQ => 14,
             Opcode::JEQ => 15,
             Opcode::JNEQ => 16,
+            Opcode::NOP => 17,
+            Opcode::ALOC => 18,
+            Opcode::INC => 19,
+            Opcode::DEC => 20,
             Opcode::IGL => 100,
         }
     }
@@ -105,6 +117,10 @@ impl<'a> From<CompleteStr<'a>> for Opcode {
             CompleteStr("ltq") => Opcode::LTQ,
             CompleteStr("jeq") => Opcode::JEQ,
             CompleteStr("jneq") => Opcode::JNEQ,
+            CompleteStr("nop") => Opcode::NOP,
+            CompleteStr("aloc") => Opcode::ALOC,
+            CompleteStr("inc") => Opcode::INC,
+            CompleteStr("dec") => Opcode::DEC,
             _ => Opcode::IGL
         }
     }
@@ -144,5 +160,7 @@ mod tests {
         assert_eq!(opcode, Opcode::SET);
         let opcode = Opcode::from(CompleteStr("SET"));
         assert_eq!(opcode, Opcode::SET);
+        let opcode = Opcode::from(CompleteStr("illegal"));
+        assert_eq!(opcode, Opcode::IGL);
     }
 }

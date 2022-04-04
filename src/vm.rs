@@ -7,6 +7,7 @@ pub struct VM {
     pub remainder: u32,
     pub is_equal: bool,
     pub is_greater: bool,
+    pub heap: Vec<u8>,
 }
 
 impl VM {
@@ -18,6 +19,7 @@ impl VM {
             remainder: 0,
             is_equal: false,
             is_greater: false,
+            heap: vec![],
         }
     }
     fn get_opcode(&mut self) -> Opcode {
@@ -56,7 +58,7 @@ impl VM {
     fn execute_instruction(&mut self) -> bool {
         if self.pcounter >= self.program.len() {
             // If this happens, something broke
-            return false;
+            return true;
         }
         match self.get_opcode() {
             Opcode::SET => {
@@ -172,12 +174,31 @@ impl VM {
                     self.pcounter = self.registers[self.next_8_bits() as usize] as usize;
                 }
             },
+            Opcode::NOP => {
+                self.next_8_bits();
+                self.next_8_bits();
+                self.next_8_bits();
+            }
+            Opcode::ALOC => {
+                let reg = self.next_8_bits() as usize;
+                let bytes = self.registers[reg];
+                let new = self.heap.len() as i32 + bytes;
+                self.heap.resize(new as usize, 0)
+            }
+            Opcode::INC => {
+                let reg = self.next_8_bits() as usize;
+                self.registers[reg] += 1;
+            }
+            Opcode::DEC => {
+                let reg = self.next_8_bits() as usize;
+                self.registers[reg] -= 1;
+            }
             Opcode::IGL => {
-                let opcode = self.get_opcode();
-                panic!("Illegal instruction encountered\nOpcode: {:?}, No. {}", opcode, opcode as u8);
+                println!("Illegal instruction encountered");
+                return true;
             }
         }
-        true
+        false
     }
 }
 pub fn get_test_vm() -> VM {
@@ -383,5 +404,14 @@ mod tests {
         test_vm.program = vec![16, 0, 0, 0, 17, 0, 0, 0, 17, 0, 0, 0];
         test_vm.run_once();
         assert_eq!(test_vm.pcounter, 7);
+    }
+
+    #[test]
+    fn test_aloc_opcode() {
+        let mut test_vm = get_test_vm();
+        test_vm.registers[0] = 3072;
+        test_vm.program = vec![18, 0, 0, 0];
+        test_vm.run_once();
+        assert_eq!(test_vm.heap.len(), 3072);
     }
 }

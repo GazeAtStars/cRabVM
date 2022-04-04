@@ -8,4 +8,7 @@ pub enum Token {
     Opcode{code: Opcode},
     Register{num: u8},
     Integer{num: i32},
+    Label{name: String},
+    LabelUsage{name: String},
+    Directive{name: String},
 }

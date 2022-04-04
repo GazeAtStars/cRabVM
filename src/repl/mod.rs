@@ -1,7 +1,7 @@
 pub mod parser;
 
 use std::{
-    io::{self, Write},
+    io::{self, Write, Read},
     num::ParseIntError,
 };
 
@@ -66,6 +66,7 @@ impl REPL {
             ".clear_registers" => self.clear_registers(&args[1..]),
             ".registers" => self.registers(&args[1..]),
             ".register" => self.register(&args[1..]),
+            ".load_file" => self.load_file(&args[1..]),
             ".hex_mode" => self.hex_mode(&args[1..]),
             _ => {
                 self.message("Invalid command!".to_string());
@@ -128,6 +129,27 @@ impl REPL {
             return;
         }
         self.message(format!("Register {} contains the value {}", register_index, self.vm.registers[register_index]));
+    }
+
+    fn load_file(&mut self, args: &[&str]) {
+        if args.len() != 1 {
+            self.message("Invalid number of arguments".to_string());
+            return;
+        }
+        let file_name = args[0];
+        let mut file = std::fs::File::open(std::path::Path::new(&file_name)).expect("Unable to open file");
+        let mut contents = String::new();
+        file.read_to_string(&mut contents).expect("Unable to read file");
+        let parsed_program = match parse_program(CompleteStr(&contents)) {
+            Ok((_rest, program)) => program,
+            Err(e) => {
+                self.message(format!("Error parsing program: {}", e));
+                return;
+            }
+        };
+        self.vm.program.append(&mut parsed_program.to_bytes());
+        println!("Loaded program from file {}", file_name);
+        self.vm.run();
     }
 
     fn hex_mode(&mut self, args: &[&str]) {

@@ -35,7 +35,7 @@ mod tests {
         let (rest, instruction) = program.unwrap();
         assert_eq!(rest, CompleteStr(""));
         assert_eq!(instruction.instructions.len(), 1);
-        assert_eq!(instruction.instructions[0].opcode, crate::asm::Token::Opcode { code:  Opcode::SET });
+        assert_eq!(instruction.instructions[0].opcode, Some(crate::asm::Token::Opcode { code:  Opcode::SET }));
     }
 
     #[test]
